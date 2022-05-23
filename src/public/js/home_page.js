@@ -26,8 +26,6 @@ function eventOnlinUsers(users) {
 }
 
 function eventAllUsers(users) {
-
-  console.log(users);
   renderAllUsers(users)
 }
 

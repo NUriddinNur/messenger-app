@@ -118,6 +118,7 @@ io.on("connection", async socket => {
 
         socket.on('disconnect', async () => {
             console.log('Disconect', userId)
+            console.log(socket);
             users = users.filter(u => u.userId != userId )
         })
     }catch(error) {
