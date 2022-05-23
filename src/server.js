@@ -9,7 +9,7 @@ import JWT from './utils/jwt.js'
 import authRouter from './routes/auth.js'
 import checkToken from './middlewares/checkToken.js'
 
-process.backendUrl = 'http://localhost:4005/'
+process.backendUrl = 'http://167.71.50.31:4005/'
 
 import './utils/config.js'
 import database from './utils/db.js'
