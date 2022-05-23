@@ -14,9 +14,7 @@ socket.on('online users', eventOnlinUsers)
 socket.on('all users', eventAllUsers)
 socket.on('messages', eventMessages)
 socket.on('new message', appendNewMessage)
-
 socket.on('error', errorHandler)
-
 
 
 function eventMessages(messages) {
@@ -28,6 +26,8 @@ function eventOnlinUsers(users) {
 }
 
 function eventAllUsers(users) {
+
+  console.log(users);
   renderAllUsers(users)
 }
 
@@ -43,7 +43,9 @@ $(function () {
     $(".side-two").css({
       "left": "0"
     });
+    socket.emit('all users')
   });
+
 
   $(".newMessage-back").click(function () {
     $(".side-two").css({
@@ -57,9 +59,12 @@ function previous(abs) {
   console.log(abs);
 }
 
+searchOnlineUsers.onkeyup = () => {
+  socket.emit('search online', searchOnlineUsers.value)
+}
 
-allUsers.onclick = () => {
-  socket.emit('all users')
+composeText.onkeyup = () => {
+  socket.emit('search all users', composeText.value)
 }
 
 
@@ -70,21 +75,31 @@ exit.onclick = () => {
 }
 
 
-
 comment.onkeyup = event => {
   if (event.keyCode !== 13 || !comment.value.trim()) return
   var newDate = new Date().toLocaleString()
 
-  if(window.localStorage.userTo) {
-    renderSendMessage(comment.value, newDate)
-    socket.emit('new message', {
-      userTo: window.localStorage.userTo,
-      body: comment.value,
-      date: newDate
-    })
+  renderSendMessage(comment.value, newDate)
+  socket.emit('new message', {
+    userTo: window.localStorage.userTo,
+    body: comment.value,
+    date: newDate
+  })
 
-  }
+  comment.value = null
+}
 
+
+sendBtn.onclick = event => {
+  if (!comment.value.trim()) return
+  let newDate = new Date().toLocaleString()
+
+  renderSendMessage(comment.value, newDate)
+  socket.emit('new message', {
+    userTo: window.localStorage.userTo,
+    body: comment.value,
+    date: newDate
+  })
   comment.value = null
 }
 

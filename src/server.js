@@ -17,6 +17,8 @@ import getOnlinUsers from './helper/onlineUsers.js'
 import allUsers from './helper/allUsers.js'
 import getMessage from './helper/getMessage.js'
 import insertMessage from './helper/insertMessage.js'
+import searchOnlineUsers from './helper/searchOnlineUsers.js'
+import searchAllUsers from './helper/searchAllUsers.js'
 
 import logOut from './helper/logOut.js'
 
@@ -56,7 +58,6 @@ app.use(authRouter)
 
 
 app.use((error, req, res, next) => {
-
     if(error.status === 400) {
         return res.status(error.status).json({
             status: error.status,
@@ -64,7 +65,6 @@ app.use((error, req, res, next) => {
             data: null
         })
     }
-    
 })
 
 
@@ -79,7 +79,6 @@ io.on("connection", async socket => {
 
         users.push({ userId, socketId})
 
-    
         io.emit('online users', await getOnlinUsers(db))
 
         socket.on('select user', async (user_to) => {
@@ -108,6 +107,15 @@ io.on("connection", async socket => {
             io.emit('online users', await getOnlinUsers(db))
         })
 
+        socket.on('search online', async (data) => {
+            io.emit('online users', await searchOnlineUsers(db, userId, data))
+        })
+
+        socket.on('search all users', async (data) => {
+            let users =  await searchAllUsers(db, data)
+            socket.emit('all users', users)
+        })
+
         socket.on('disconnect', async () => {
             console.log('Disconect', userId)
             users = users.filter(u => u.userId != userId )
@@ -119,7 +127,3 @@ io.on("connection", async socket => {
 
 
 httpServer.listen(PORT, () => console.log('*4005'))
-
-
-
-

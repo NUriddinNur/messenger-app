@@ -1,5 +1,6 @@
 const url = 'http://167.71.50.31:4005/'
 
+
 async function request(route, method, body) {
     let response = await fetch(url + route, {
         method,
@@ -12,7 +13,11 @@ async function request(route, method, body) {
 function appendOnlineUsers(users) {
     rowSidebar.innerHTML = null
 
+
     for (let user of users) {
+        const day = user.user_updated_at.split('T')[0]
+        const hour = user.user_updated_at.split('T')[1].split(':')[0]
+        const min = user.user_updated_at.split('T')[1].split(':')[1]
         if (user.username === username) continue
         let span2 = document.createElement('span')
         let span = document.createElement('span')
@@ -36,7 +41,6 @@ function appendOnlineUsers(users) {
         div3.classList.add('avatar-icon')
         img.classList.add('avatar-icon')
         span.classList.add('name-meta')
-
         div5.classList.add('row')
 
         rowSidebar.append(div1)
@@ -50,7 +54,8 @@ function appendOnlineUsers(users) {
         div1.append(div4)
         div3.append(img)
 
-        span2.textContent = user.user_updated_at
+        span2.textContent = day + ' ' + hour + ':' + min
+        span2.style.color = 'green'
         span.textContent = user.username
         img.src = user.user_img
     }
@@ -62,6 +67,9 @@ function renderAllUsers(users) {
     allUsersList.innerHTML = null
 
     for (let user of users) {
+        const day = user.user_updated_at.split('T')[0]
+        const hour = user.user_updated_at.split('T')[1].split(':')[0]
+        const min = user.user_updated_at.split('T')[1].split(':')[1]
         if (user.username === username) continue
         let span2 = document.createElement('span')
         let span = document.createElement('span')
@@ -73,21 +81,17 @@ function renderAllUsers(users) {
         let div6 = document.createElement('div')
         let div7 = document.createElement('div')
         let img = document.createElement('img')
-
         div1.addEventListener("click", selectUser(user.user_id))
-
         div1.classList.add('row', 'sideBar-body')
         div2.classList.add('col-sm-3', 'col-xs-3', 'sideBar-avatar')
         div3.classList.add('avatar-icon')
         img.classList.add('avatar-icon')
-
         div7.classList.add('col-sm-4', 'col-xs-4', 'pull-right', 'sideBar-time')
         div4.classList.add('col-sm-9', 'col-xs-9', 'sideBar-main')
         div6.classList.add('col-sm-8', 'col-xs-8', 'sideBar-name')
         span2.classList.add('time-meta', 'pull-right')
         span.classList.add('name-meta')
         div5.classList.add('row')
-
         allUsersList.append(div1)
         div7.append(span2)
         div2.append(div3)
@@ -99,9 +103,15 @@ function renderAllUsers(users) {
         div1.append(div4)
         div3.append(img)
 
-        span2.textContent = user.user_updated_at
         span.textContent = user.username
         img.src = user.user_img
+
+        if (user.logged) {
+            span2.textContent = 'online'
+            span2.style.color = 'green'
+        } else {
+            span2.textContent = day + ' ' + hour + ':' + min
+        }
     }
 }
 
@@ -113,6 +123,9 @@ function renderMessages({ messages, userId, userTo }) {
     selectedUserImg.src = userTo.user_img
 
     for (let mess of messages) {
+        const day = mess.message_created_at.split('T')[0]
+        const hour = mess.message_created_at.split('T')[1].split(':')[0]
+        const min = mess.message_created_at.split('T')[1].split(':')[1]
         let div1 = document.createElement('div')
         let div2 = document.createElement('div')
         let div3 = document.createElement('div')
@@ -131,7 +144,7 @@ function renderMessages({ messages, userId, userTo }) {
         div4.classList.add('message-text')
         span.classList.add('message-time', 'pull-right')
         div4.textContent = mess.body
-        span.textContent = mess.message_created_at
+        span.textContent = day + ' ' + hour + ':' + min
         div3.append(div4)
         div3.append(span)
         div2.append(div3)
@@ -139,13 +152,14 @@ function renderMessages({ messages, userId, userTo }) {
         conversation.append(div1)
         conversation.scrollTo({
             top: 1000000000,
-          });
+        });
     }
 }
 
 
 function selectUser(user_id) {
     return function () {
+        comment.removeAttribute('disabled')
         socket.emit('select user', user_id)
     }
 }
@@ -173,14 +187,13 @@ function appendNewMessage(data) {
         conversation.append(div1)
         conversation.scrollTo({
             top: 1000000000,
-          });
+        });
     }
 }
 
 
 function renderSendMessage(value, date) {
     userTo = window.localStorage.userTo
-
     if (userTo) {
         let div1 = document.createElement('div')
         let div2 = document.createElement('div')
@@ -199,9 +212,8 @@ function renderSendMessage(value, date) {
         div2.append(div3)
         div1.append(div2)
         conversation.append(div1)
-
         conversation.scrollTo({
             top: 1000000000,
-          });
+        });
     }
 }
