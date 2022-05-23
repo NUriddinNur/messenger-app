@@ -1,4 +1,4 @@
-const url = 'http://167.71.50.31:4005/'
+const url = 'http://localhost:4005/'
 
 async function request(route, method, body) {
     let response = await fetch(url + route, {
@@ -36,6 +36,7 @@ function appendOnlineUsers(users) {
         div3.classList.add('avatar-icon')
         img.classList.add('avatar-icon')
         span.classList.add('name-meta')
+
         div5.classList.add('row')
 
         rowSidebar.append(div1)
