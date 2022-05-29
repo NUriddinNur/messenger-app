@@ -8,7 +8,7 @@ import ejs from "ejs"
 import JWT from './utils/jwt.js'
 import authRouter from './routes/auth.js'
 
-process.backendUrl = 'http://localhost:4005/'
+process.backendUrl = 'http://167.71.50.31:4005/'
 
 import comunicatingUsers from './helper/comunicatingUsers.js'
 import searchOnlineUsers from './helper/searchOnlineUsers.js'
