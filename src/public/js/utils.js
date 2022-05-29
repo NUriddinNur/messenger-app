@@ -1,4 +1,4 @@
-const url = 'http://167.71.50.31:4005/'
+const url = 'http://localhost:4005/'
 
 
 async function request(route, method, body) {
@@ -10,9 +10,8 @@ async function request(route, method, body) {
 }
 
 // render online users
-function appendOnlineUsers(users) {
+function renderCommunicatingUsers(users) {
     rowSidebar.innerHTML = null
-
 
     for (let user of users) {
         const day = user.user_updated_at.split('T')[0]
@@ -53,11 +52,15 @@ function appendOnlineUsers(users) {
         div5.append(div7)
         div1.append(div4)
         div3.append(img)
-
-        span2.textContent = day + ' ' + hour + ':' + min
-        span2.style.color = 'green'
         span.textContent = user.username
         img.src = user.user_img
+
+        if (user.logged) {
+            span2.textContent = 'online'
+            span2.style.color = 'green'
+        } else {
+            span2.textContent = day + ' ' + hour + ':' + min
+        }
     }
 
 }

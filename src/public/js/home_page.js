@@ -10,7 +10,7 @@ avatarCurrentUser.src = userImg
 activName.textContent = username
 
 
-socket.on('online users', eventOnlinUsers)
+socket.on('communicating Users', eventCommunicating)
 socket.on('all users', eventAllUsers)
 socket.on('messages', eventMessages)
 socket.on('new message', appendNewMessage)
@@ -21,8 +21,8 @@ function eventMessages(messages) {
   renderMessages(messages)
 }
 
-function eventOnlinUsers(users) {
-  appendOnlineUsers(users)
+function eventCommunicating(users) {
+  renderCommunicatingUsers(users)
 }
 
 function eventAllUsers(users) {
@@ -67,7 +67,6 @@ composeText.onkeyup = () => {
 
 
 exit.onclick = () => {
-  socket.emit('log out')
   window.localStorage.clear()
   window.location = '/login'
 }
@@ -100,8 +99,3 @@ sendBtn.onclick = event => {
   })
   comment.value = null
 }
-
-
-
-
-

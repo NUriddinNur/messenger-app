@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Hello</h1>
+    <script>
+
+        var win = window.open("http://www.google.com")
+        console.log(win);
+        var winClosed = setInterval(function () {
+            if (win.closed) {
+                clearInterval(winClosed);
+                foo(); //Call your function here
+            }
+        }, 250)
+
+        function foo() {
+            console.log(winClosed);
+        }
+    </script>
+</body>
+
+</html>

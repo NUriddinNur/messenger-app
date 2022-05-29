@@ -7,20 +7,18 @@ import ejs from "ejs"
 
 import JWT from './utils/jwt.js'
 import authRouter from './routes/auth.js'
-import checkToken from './middlewares/checkToken.js'
 
-process.backendUrl = 'http://167.71.50.31:4005/'
+process.backendUrl = 'http://localhost:4005/'
 
+import comunicatingUsers from './helper/comunicatingUsers.js'
+import searchOnlineUsers from './helper/searchOnlineUsers.js'
+import userUpdateStatus from './helper/userUpdateStatus.js'
+import searchAllUsers from './helper/searchAllUsers.js'
+import insertMessage from './helper/insertMessage.js'
+import getMessage from './helper/getMessage.js'
+import allUsers from './helper/allUsers.js'
 import './utils/config.js'
 import database from './utils/db.js'
-import getOnlinUsers from './helper/onlineUsers.js'
-import allUsers from './helper/allUsers.js'
-import getMessage from './helper/getMessage.js'
-import insertMessage from './helper/insertMessage.js'
-import searchOnlineUsers from './helper/searchOnlineUsers.js'
-import searchAllUsers from './helper/searchAllUsers.js'
-
-import logOut from './helper/logOut.js'
 
 
 const PORT = process.env.PORT || 4005
@@ -77,9 +75,10 @@ io.on("connection", async socket => {
         const token = socket.handshake.headers.token
         const {userId} = JWT.verify(token)
 
+        userUpdateStatus(db, userId, true)
         users.push({ userId, socketId})
 
-        io.emit('online users', await getOnlinUsers(db))
+        socket.emit('communicating Users', await comunicatingUsers(db, userId))
 
         socket.on('select user', async (user_to) => {
             let user_from = userId
@@ -93,22 +92,19 @@ io.on("connection", async socket => {
         })
 
 
-        socket.on('new message', (data) => {
+        socket.on('new message', async (data) => {
             data.userId = userId
             insertMessage(db, data)
+            socket.emit('communicating Users', await comunicatingUsers(db, userId))
             const socketId = users.find(user => user.userId == data.userTo)?.socketId
             if (socketId) {
-                io.to(socketId).emit('new message', data)
+                io.to(socketId).emit('new message', await data)
+                io.to(socketId).emit('communicating Users', await comunicatingUsers(db, data.userTo))
             }
         })
 
-        socket.on('log out', async () => {
-            await logOut(db, userId)
-            io.emit('online users', await getOnlinUsers(db))
-        })
-
         socket.on('search online', async (data) => {
-            io.emit('online users', await searchOnlineUsers(db, userId, data))
+            io.emit('communicating Users', await searchOnlineUsers(db, userId, data))
         })
 
         socket.on('search all users', async (data) => {
@@ -118,9 +114,16 @@ io.on("connection", async socket => {
 
         socket.on('disconnect', async () => {
             console.log('Disconect', userId)
-            console.log(socket);
             users = users.filter(u => u.userId != userId )
+
+            for await (let u of users) {
+                console.log(u.userId);
+                io.emit('communicating Users', await comunicatingUsers(db, u.userId))
+            }
+
+            await userUpdateStatus(db, userId, false)
         })
+
     }catch(error) {
         socket.emit('error', error)
     }

@@ -7,7 +7,7 @@ const sequelize = new Sequelize({
     username: process.env.PG_USER,
     database: process.env.PG_DATABASE,
     host: process.env.PG_HOST,
-    password: process.env.PG_PASSWORD + '',
+    password: process.env.PG_PASSWORD,
     port: process.env.PG_PORT,
     logging: false
 })
@@ -24,7 +24,7 @@ export default async function() {
 
         
         // sync models
-        sequelize.sync({ alter: true })
+        sequelize.sync({ alter: false })
         console.log('Models are syncronized!')
 
         return sequelize
